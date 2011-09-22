@@ -22,8 +22,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.epe.annotations.ECell;
 
-import com.itsv.gbp.core.util.DateFromat;
-
 /**
  * 授权说明：
  * 
@@ -109,7 +107,7 @@ public class ExcelResolve extends AbstractExcelResolve {
 			if (headCell.getFieldType() == Integer.class && field.getType() == Integer.class) {
 				field.set(obj, Integer.parseInt(headCell.getValue() == null ? "" : headCell.getValue().toString()));
 			}
-			if (headCell.getFieldType() == String.class) {
+			if (headCell.getFieldType() == String.class && field.getType()==String.class) {
 				field.set(obj, headCell.getValue() == null ? "" : headCell.getValue().toString());
 			}
 			if (headCell.getFieldType() == Double.class && field.getType() == Double.class) {
@@ -128,6 +126,7 @@ public class ExcelResolve extends AbstractExcelResolve {
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
 			if (e.getMessage().indexOf("Integer") != -1) {
 				throw new ResolveException(headCell.getName() + "字段不为合法的整型");
 			} else if (e.getMessage().indexOf("Date") != -1) {
@@ -135,7 +134,6 @@ public class ExcelResolve extends AbstractExcelResolve {
 			} else if (e.getMessage().indexOf("Float") != -1) {
 				throw new ResolveException(headCell.getName() + "字段不是合法的小数类型");
 			}
-			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
@@ -356,7 +354,8 @@ public class ExcelResolve extends AbstractExcelResolve {
 
 				ECell ecell = fields[j].getAnnotation(ECell.class);
 				try {
-					if (ecell != null && headCell.getName().equals(ecell.name())) {
+					if (ecell != null  && headCell.getName().equals(ecell.name())) {
+						
 						setObjectValues(fields[j], obj, headCell);
 					}
 				} catch (ResolveException e) {
@@ -394,7 +393,7 @@ public class ExcelResolve extends AbstractExcelResolve {
 		this.createWorkbook();
 		for (Workbook workbook : this.workbook) {
 			// 多个sheet处理方式
-			if (getSheetItems() != null) {
+			//if (getSheetItems() != null) {
 				for (SheetItem sheetItem : sheetItems) {
 					// Sheet s = wb.createSheet();
 					List<HeadCell> listValue = null;
@@ -410,9 +409,9 @@ public class ExcelResolve extends AbstractExcelResolve {
 					}
 					genericExcel(workbook, listValue, sheetItem.getName());
 				}
-			} else {
-				genericExcel(workbook, getHeadCells(), getSheetName());
-			}
+			//} else {
+			//	genericExcel(workbook, getHeadCells(), getSheetName());
+			//}
 
 		}
 		genericDataSource(this.getServerPath());
@@ -485,6 +484,7 @@ public class ExcelResolve extends AbstractExcelResolve {
 		}
 		return sheets;
 	}
+
 	/**
 	 * 测试导出EXCEl文件格式
 	 */
@@ -493,13 +493,13 @@ public class ExcelResolve extends AbstractExcelResolve {
 	//
 	//		AbstractExcelResolve aer = new ExcelResolve();
 	//		aer.setServerPath(serverPath);
-	//		List<Sheet> sheets = aer.getSheet("老龄工作网络报表");
+	//		List<Sheet> sheets = aer.getSheet("老龄事业发展情况");
 	//		for (Sheet sheet : sheets) {
 	//			Row row = null;
 	//			Cell cell = null;
-	//			for (int j = 0; j < 8; j++) {
+	//			for (int j = 0; j < 10; j++) {
 	//				row = sheet.createRow(j);
-	//				for (int j2 = 0; j2 < 7; j2++) {
+	//				for (int j2 = 0; j2 < 32; j2++) {
 	//					cell = row.createCell(j2);
 	//					cell.setCellValue(j2);
 	//				}
@@ -519,61 +519,118 @@ public class ExcelResolve extends AbstractExcelResolve {
 	//			//背景颜色
 	//			cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 	//			cellStyle.setFillForegroundColor(HSSFColor.TURQUOISE.index);
-	//			for (int i = 1; i < 7; i++) {
+	//			for (int i = 1; i < 6; i++) {
 	//				row = sheet.createRow(i);
-	//				for (int j = 0; j < 7; j++) {
+	//				for (int j = 0; j < 32; j++) {
 	//					row.createCell(j).setCellStyle(cellStyle);
 	//				}
 	//			}
 	//			/******第一行******/
 	//			CellRangeAddress cra00 = new CellRangeAddress(0, 0, 0, 1);
 	//			sheet.addMergedRegion(cra00);
-	//			CellRangeAddress cra02 = new CellRangeAddress(0, 0, 2, 4);
+	//			CellRangeAddress cra02 = new CellRangeAddress(0, 0, 2, 30);
 	//			sheet.addMergedRegion(cra02);
 	//			sheet.getRow(0).getCell(0).setCellValue("区(县):石景山");
-	//			sheet.getRow(0).getCell(6).setCellValue("单位:个");
+	//			sheet.getRow(0).getCell(31).setCellValue("单位:个");
 	//			/******第二行******/
-	//			CellRangeAddress cra10 = new CellRangeAddress(1, 1, 0, 6);
+	//			CellRangeAddress cra10 = new CellRangeAddress(1, 1, 0, 31);
 	//			sheet.addMergedRegion(cra10);
-	//			sheet.getRow(1).getCell(0).setCellValue("2011年度北京市区县老龄工作基本情况调查表(四)");
+	//			sheet.getRow(1).getCell(0).setCellValue("2010年度北京市区县老龄工作基本情况调查表(六)");
 	//			/******第三行******/
-	//			CellRangeAddress cra20 = new CellRangeAddress(2, 2, 0, 6);
+	//			CellRangeAddress cra20 = new CellRangeAddress(2, 4, 0, 0);
 	//			sheet.addMergedRegion(cra20);
-	//			sheet.getRow(2).getCell(0).setCellValue("老齡福利服务设施情况 ");
+	//			sheet.getRow(2).getCell(0).setCellValue("指标名称 ");
+	//			CellRangeAddress cra21 = new CellRangeAddress(2, 3, 1, 5);
+	//			sheet.addMergedRegion(cra21);
+	//			sheet.getRow(2).getCell(1).setCellValue("老龄人口发展情况 ");
+	//			CellRangeAddress cra26 = new CellRangeAddress(2, 2, 6, 31);
+	//			sheet.addMergedRegion(cra26);
+	//			sheet.getRow(2).getCell(6).setCellValue("老龄事业发展情况");
 	//			/******第四行******/
-	//			CellRangeAddress cra30 = new CellRangeAddress(3, 3, 0, 6);
-	//			sheet.addMergedRegion(cra30);
-	//			sheet.getRow(3).getCell(0).setCellValue("实施\"星光计划\"建设的老年福利服务设施 ");
+	//			CellRangeAddress cra36 = new CellRangeAddress(3, 3, 6, 9);
+	//			sheet.addMergedRegion(cra36);
+	//			sheet.getRow(3).getCell(6).setCellValue("老年维权");
+	//			CellRangeAddress cra310 = new CellRangeAddress(3, 3, 10, 11);
+	//			sheet.addMergedRegion(cra310);
+	//			sheet.getRow(3).getCell(10).setCellValue("老年服务设施");
+	//			sheet.getRow(3).getCell(12).setCellValue("老年福利");
+	//			CellRangeAddress cra313 = new CellRangeAddress(3, 3, 13, 17);
+	//			sheet.addMergedRegion(cra313);
+	//			sheet.getRow(3).getCell(13).setCellValue("老年医疗护理机构");
+	//			CellRangeAddress cra318 = new CellRangeAddress(3, 3, 18, 29);
+	//			sheet.addMergedRegion(cra318);
+	//			sheet.getRow(3).getCell(18).setCellValue("老年群众组织");
+	//			CellRangeAddress cra330 = new CellRangeAddress(3, 3, 30, 31);
+	//			sheet.addMergedRegion(cra330);
+	//			sheet.getRow(3).getCell(30).setCellValue("老年群众组织");
 	//			/******第五行******/
-	//			CellRangeAddress cra40 = new CellRangeAddress(4, 4, 0, 3);
-	//			sheet.addMergedRegion(cra40);
-	//			sheet.getRow(4).getCell(0).setCellValue("性质");
-	//			CellRangeAddress cra44 = new CellRangeAddress(4, 4, 4, 6);
-	//			sheet.addMergedRegion(cra44);
-	//			sheet.getRow(4).getCell(4).setCellValue("使用情况 ");
+	//			sheet.getRow(4).getCell(1).setCellValue("60岁以上老年人口数");
+	//			sheet.getRow(4).getCell(2).setCellValue("70岁以上老年人口数");
+	//			sheet.getRow(4).getCell(3).setCellValue("80岁以上老年人口数");
+	//			sheet.getRow(4).getCell(4).setCellValue("100岁以上老年人口数");
+	//			sheet.getRow(4).getCell(5).setCellValue("纯老年家庭人口数");
+	//			sheet.getRow(4).getCell(6).setCellValue("老龄系统接待来信访问次数");
+	//			sheet.getRow(4).getCell(7).setCellValue("老年法律援救中心");
+	//			sheet.getRow(4).getCell(8).setCellValue("涉老案件数");
+	//			sheet.getRow(4).getCell(9).setCellValue("维权协调组织数");
+	//			sheet.getRow(4).getCell(10).setCellValue("老年活动站/中心/室数");
+	//			sheet.getRow(4).getCell(11).setCellValue("老年人参加人数");
+	//			sheet.getRow(4).getCell(12).setCellValue("享受高龄补贴的老年人数");
+	//			sheet.getRow(4).getCell(13).setCellValue("老年医院数");
+	//			sheet.getRow(4).getCell(14).setCellValue("其中床位数 ");
+	//			sheet.getRow(4).getCell(15).setCellValue("临终关怀医院数");
+	//			sheet.getRow(4).getCell(16).setCellValue("床位数");
+	//			sheet.getRow(4).getCell(17).setCellValue("年底在院人数");
+	//			sheet.getRow(4).getCell(18).setCellValue("老年协会");
+	//			sheet.getRow(4).getCell(19).setCellValue("其中参加人数");
+	//			sheet.getRow(4).getCell(20).setCellValue("居、村老年协会");
+	//			sheet.getRow(4).getCell(21).setCellValue("其中参加人数");
+	//			sheet.getRow(4).getCell(22).setCellValue("街、乡老年协会");
+	//			sheet.getRow(4).getCell(23).setCellValue("其中参加人数");
+	//			sheet.getRow(4).getCell(24).setCellValue("市、县老年协会");
+	//			sheet.getRow(4).getCell(25).setCellValue("其中参加人数");
+	//			sheet.getRow(4).getCell(26).setCellValue("老年基金会");
+	//			sheet.getRow(4).getCell(27).setCellValue("事业投入经费");
+	//			sheet.getRow(4).getCell(28).setCellValue("其他老年社团组织");
+	//			sheet.getRow(4).getCell(29).setCellValue("参加人数");
+	//			sheet.getRow(4).getCell(30).setCellValue("老年学校");
+	//			sheet.getRow(4).getCell(31).setCellValue("在校人数");
 	//			/******第六行******/
-	//			CellRangeAddress cra50 = new CellRangeAddress(5, 5, 0, 1);
-	//			sheet.addMergedRegion(cra50);
-	//			sheet.getRow(5).getCell(0).setCellValue("城市社区星光老年之家");
-	//			CellRangeAddress cra52 = new CellRangeAddress(5, 5, 2, 3);
-	//			sheet.addMergedRegion(cra52);
-	//			sheet.getRow(5).getCell(2).setCellValue("农村老年福利服务设施");
-	//			sheet.getRow(5).getCell(4).setCellValue("正常运转");
-	//			sheet.getRow(5).getCell(5).setCellValue("改变用途");
-	//			sheet.getRow(5).getCell(6).setCellValue("闲置");
-	//			/******第八行******/
-	//			CellRangeAddress cra70 = new CellRangeAddress(7, 7, 0, 1);
-	//			sheet.addMergedRegion(cra70);
-	//			sheet.getRow(7).getCell(0).setCellValue("负责人:");
-	//			CellRangeAddress cra72 = new CellRangeAddress(7, 7, 2, 3);
-	//			sheet.addMergedRegion(cra72);
-	//			sheet.getRow(7).getCell(2).setCellValue("填表人:");
-	//			CellRangeAddress cra75 = new CellRangeAddress(7, 7, 4, 7);
-	//			sheet.addMergedRegion(cra75);
-	//			sheet.getRow(7).getCell(5).setCellValue("填报日期:");
+	//			sheet.getRow(5).getCell(0).setCellValue("单位");
+	//			sheet.getRow(5).getCell(1).setCellValue("人");
+	//			sheet.getRow(5).getCell(2).setCellValue("人");
+	//			sheet.getRow(5).getCell(3).setCellValue("人");
+	//			sheet.getRow(5).getCell(4).setCellValue("人");
+	//			sheet.getRow(5).getCell(5).setCellValue("人");
+	//			sheet.getRow(5).getCell(6).setCellValue("次");
+	//			sheet.getRow(5).getCell(7).setCellValue("个");
+	//			sheet.getRow(5).getCell(8).setCellValue("件");
+	//			sheet.getRow(5).getCell(9).setCellValue("个");
+	//			sheet.getRow(5).getCell(10).setCellValue("个");
+	//			sheet.getRow(5).getCell(11).setCellValue("人");
+	//			sheet.getRow(5).getCell(12).setCellValue("人");
+	//			sheet.getRow(5).getCell(13).setCellValue("个");
+	//			sheet.getRow(5).getCell(14).setCellValue("张 ");
+	//			sheet.getRow(5).getCell(15).setCellValue("个");
+	//			sheet.getRow(5).getCell(16).setCellValue("张");
+	//			sheet.getRow(5).getCell(17).setCellValue("人");
+	//			sheet.getRow(5).getCell(18).setCellValue("个");
+	//			sheet.getRow(5).getCell(19).setCellValue("人");
+	//			sheet.getRow(5).getCell(20).setCellValue("个");
+	//			sheet.getRow(5).getCell(21).setCellValue("人");
+	//			sheet.getRow(5).getCell(22).setCellValue("个");
+	//			sheet.getRow(5).getCell(23).setCellValue("人");
+	//			sheet.getRow(5).getCell(24).setCellValue("个");
+	//			sheet.getRow(5).getCell(25).setCellValue("人");
+	//			sheet.getRow(5).getCell(26).setCellValue("个");
+	//			sheet.getRow(5).getCell(27).setCellValue("万元");
+	//			sheet.getRow(5).getCell(28).setCellValue("个");
+	//			sheet.getRow(5).getCell(29).setCellValue("人");
+	//			sheet.getRow(5).getCell(30).setCellValue("个");
+	//			sheet.getRow(5).getCell(31).setCellValue("人");
+	//			
 	//
 	//			aer.genericDataSource(serverPath);
-	//
 	//		}
 	//		System.out.println("ExcelResolve.main(程序结束)");
 	//	}
